@@ -60,7 +60,7 @@ void ShowMainWindow()
 
     if( ImGui::Button( "Test Log" ) )
     {
-        AppLog::get()->AddLog( "Hello %d world\n", 123 );
+        AppLog::Add( "Hello %d world\n", 123 );
     }
 
     static float pr = 30;

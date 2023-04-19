@@ -40,9 +40,10 @@ public:
     bool AutoScroll;           // Keep scrolling if already at the bottom.
 
     void Clear();
-    void AddLog( const char* fmt, ... ) ;//IM_FMTARGS( 2 );
+    void AddLog( const char* fmt, ... )  IM_FMTARGS( 2 );
     void Draw( const char* title, bool* p_open = NULL );
 
+    static void Add( const char* fmt, ... ) ;
 };
 
 void ShowAppLog( bool* p_open );

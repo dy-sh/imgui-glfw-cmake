@@ -119,8 +119,11 @@ void AppLog::Draw( const char* title, bool* p_open )
     ImGui::EndChild();
     ImGui::End();
 }
-
-
+void AppLog::Add( const char* fmt, ... ) {
+    auto log= AppLog::get();
+    va_list args;
+    log->AddLog(fmt, args);
+}
 
 void ShowAppLog( bool* p_open )
 {
