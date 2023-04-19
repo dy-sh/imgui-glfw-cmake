@@ -17,18 +17,32 @@
 //  my_log.Draw("title");
 struct AppLog
 {
+private:
+    AppLog(){};
+    AppLog(const AppLog&) = delete;
+    AppLog& operator=(const AppLog&) = delete;
+
+public:
+    static AppLog* get() {
+        static AppLog* instance;
+
+        if (!instance) {
+            instance = new AppLog();
+            instance->AutoScroll = true;
+            instance->Clear();
+        }
+        return instance;
+    }
+
     ImGuiTextBuffer Buf;
     ImGuiTextFilter Filter;
     ImVector<int> LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
     bool AutoScroll;           // Keep scrolling if already at the bottom.
 
-    AppLog();
-
     void Clear();
-
-    void AddLog( const char* fmt, ... ) IM_FMTARGS( 2 );
-
+    void AddLog( const char* fmt, ... ) ;//IM_FMTARGS( 2 );
     void Draw( const char* title, bool* p_open = NULL );
+
 };
 
 void ShowAppLog( bool* p_open );

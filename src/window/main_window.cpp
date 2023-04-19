@@ -4,15 +4,16 @@
 
 #include "main_window.h"
 #include "imgui/imgui.h"
+#include "log.h"
 
-// bool show_login_window;
+bool maximize_main_window = false;
 
 extern bool show_login_window;
 extern bool show_main_window;
 
 static float OriginalWindowRounding;
 
-void ApplyMainWindowStyle()
+void MaximizeMainWindow()
 {
 #ifdef IMGUI_HAS_VIEWPORT
     ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -29,7 +30,7 @@ void ApplyMainWindowStyle()
     style->WindowRounding  = 0.0;
 }
 
-void FinishMainWindowStyle()
+void FinishMaximizeMainWindow()
 {
     ImGuiStyle* style     = &ImGui::GetStyle();
     style->WindowRounding = OriginalWindowRounding;
@@ -37,21 +38,30 @@ void FinishMainWindowStyle()
 
 void ShowMainWindow()
 {
-    ApplyMainWindowStyle();
+    if( maximize_main_window )
+    {
+        MaximizeMainWindow();
+        ImGui::Begin( "Main", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize );
+    }else{
+        ImGui::Begin( "Main", &show_main_window );
 
-    ImGui::Begin( "Main", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize );
+    }
 
     static int counter = 0;
     ImGui::Text( "Hello, world!" );
-    //        ImGui::ColorEdit3( "clear color", (float *)&bg_color );
 
     ImGui::Text( "Windows" );
-    ImGui::Checkbox( "Another Window", &show_login_window );
+    ImGui::Checkbox( "Login", &show_login_window );
 
     if( ImGui::Button( "Button" ) )
         counter++;
     ImGui::SameLine();
     ImGui::Text( "counter = %d", counter );
+
+    if( ImGui::Button( "Test Log" ) )
+    {
+        AppLog::get()->AddLog( "Hello %d world\n", 123 );
+    }
 
     static float pr = 30;
     ImGui::SliderFloat( "Prog", &pr, 0, 100 );
@@ -59,5 +69,6 @@ void ShowMainWindow()
 
     ImGui::End();
 
-    FinishMainWindowStyle();
+    if( maximize_main_window )
+        FinishMaximizeMainWindow();
 }

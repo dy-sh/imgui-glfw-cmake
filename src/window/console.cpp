@@ -93,7 +93,7 @@ void AppConsole::ClearLog()
     Items.clear();
 }
 
-void AppConsole::AddLog( const char* fmt, ... ) // IM_FMTARGS(2)
+void AppConsole::AddLog( const char* fmt, ... )
 {
     // FIXME-OPT
     char buf[1024];

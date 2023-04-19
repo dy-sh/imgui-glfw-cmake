@@ -21,7 +21,7 @@ struct AppConsole
     AppConsole();
     ~AppConsole();
     void ClearLog();
-    void AddLog( const char* fmt, ... );
+    void AddLog( const char* fmt, ... ) IM_FMTARGS(2);
     void Draw( const char* title, bool* p_open );
     void ExecCommand( const char* command_line );
     int TextEditCallback( ImGuiInputTextCallbackData* data );
