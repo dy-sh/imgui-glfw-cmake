@@ -41,9 +41,9 @@ void ShowMainWindow()
     if( maximize_main_window )
     {
         MaximizeMainWindow();
-        ImGui::Begin( "Main", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize );
+        ImGui::Begin( "Main", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus );
     }else{
-        ImGui::Begin( "Main", &show_main_window );
+        ImGui::Begin( "Main", NULL, ImGuiWindowFlags_NoBringToFrontOnFocus );
 
     }
 

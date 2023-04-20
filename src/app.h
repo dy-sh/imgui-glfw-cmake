@@ -19,6 +19,8 @@ bool show_main_window  = true;
 static bool show_app_console = false;
 static bool show_app_log     = false;
 
+static bool show_demo_window = true;
+
 static bool show_app_metrics      = false;
 static bool show_app_debug_log    = false;
 static bool show_app_stack_tool   = false;
@@ -46,6 +48,9 @@ static void ShowWindows()
 
     if( show_main_window && !show_login_window )
         ShowMainWindow();
+
+    if (show_demo_window)
+        ImGui::ShowDemoWindow(&show_demo_window);
 
     if( show_app_console )
         ShowAppConsole( &show_app_console );
@@ -80,6 +85,7 @@ static void ShowDebugToolbar()
             ImGui::MenuItem( "Stack Tool", NULL, &show_app_stack_tool );
             ImGui::MenuItem( "Style Editor", NULL, &show_app_style_editor );
             ImGui::MenuItem( "About Dear ImGui", NULL, &show_app_about );
+            ImGui::MenuItem( "Demo Window", NULL, &show_demo_window );
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();

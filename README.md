@@ -2,10 +2,12 @@
 
 ImGui application template with GLFW for rendering and CMake for building.
 
+Using a custom theme.
+
 ![](screen.png)
 
-## Build as native app
 
+## Build as native app
 
 ```
 mkdir -p build
