@@ -68,7 +68,8 @@ void ShowMainWindow()
 
     if( ImGui::Button( "Test Log" ) )
     {
-        LOG( "Hello %d world\n", 123 );
+        LOG( "Simple %d message example", 123 );
+        LOG(LogLevel::Warn, "Warn message example" );
         show_app_log = true;
     }
 

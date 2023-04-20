@@ -4,7 +4,7 @@
 
 #include "log.h"
 #include <cstdio>
-#include <string>
+#include <iomanip>
 
 // singleton
 AppLog* AppLog::get()
@@ -27,23 +27,37 @@ void AppLog::Clear()
     LineOffsets.push_back( 0 );
 }
 
-void AppLog::AddLog( const char* fmt, ... )
+void AppLog::AddLog( LogLevel level, const char* fmt, ... )
 {
+    std::ostringstream oss;
+
+    // append current time
+    oss << "[" << std::fixed << std::setprecision( 2 ) << ImGui::GetTime() << "] ";
+
+    // append LogLevel
+    oss << "[" << ToString( level ) << "] ";
+
+    // append message
+    oss << fmt << "\n";
+
+    std::string s = oss.str();
+    fmt           = s.c_str();
+
+    // write message
     int old_size = Buf.size();
     va_list args;
     va_start( args, fmt );
     Buf.appendfv( fmt, args );
     va_end( args );
+
     for( int new_size = Buf.size(); old_size < new_size; old_size++ )
         if( Buf[old_size] == '\n' )
             LineOffsets.push_back( old_size + 1 );
 }
 
-void AppLog::Draw( const char* title, bool* p_open )
+void AppLog::Draw( bool* p_open )
 {
-    //    auto log = AppLog::get();
-
-    if( !ImGui::Begin( title, p_open ) )
+    if( !ImGui::Begin( "Log", p_open ) )
     {
         ImGui::End();
         return;
@@ -132,7 +146,23 @@ void AppLog::Draw( const char* title, bool* p_open )
     ImGui::EndChild();
     ImGui::End();
 }
+
 void AppLog::Add( const char* fmt, ... )
+{
+    auto log = AppLog::get();
+
+    va_list args;
+    va_start( args, fmt );
+
+    int length = vsnprintf( nullptr, 0, fmt, args );     // Determine the length of the formatted string
+    std::string buffer( length, '\0' );                  // Allocate a buffer to store the formatted string
+    vsnprintf( &buffer[0], length + 1, fmt, args );      // Format the string into the buffer
+    log->AddLog( LogLevel::Info, "%s", buffer.c_str() ); // Add the formatted string to the log
+
+    va_end( args );
+}
+
+void AppLog::Add( LogLevel level, const char* fmt, ... )
 {
     auto log = AppLog::get();
 
@@ -142,39 +172,13 @@ void AppLog::Add( const char* fmt, ... )
     int length = vsnprintf( nullptr, 0, fmt, args ); // Determine the length of the formatted string
     std::string buffer( length, '\0' );              // Allocate a buffer to store the formatted string
     vsnprintf( &buffer[0], length + 1, fmt, args );  // Format the string into the buffer
-    log->AddLog( "%s", buffer.c_str() );             // Add the formatted string to the log
+    log->AddLog( level, "%s", buffer.c_str() );      // Add the formatted string to the log
 
     va_end( args );
 }
 
-void ShowAppLog( bool* p_open )
+void AppLog::Show( bool* p_open )
 {
-
-    // For the demo: add a debug button _BEFORE_ the normal log window contents
-    // We take advantage of a rarely used feature: multiple calls to Begin()/End() are appending to the _same_ window.
-    // Most of the contents of the window will be added by the Draw() call.
-    ImGui::SetNextWindowSize( ImVec2( 500, 400 ), ImGuiCond_FirstUseEver );
-    ImGui::Begin( "Example: Log", p_open );
-
-    if( ImGui::SmallButton( "[Debug] Add 5 entries" ) )
-    {
-        static int counter        = 0;
-        const char* categories[3] = { "info", "warn", "error" };
-        const char* words[]       = { "Bumfuzzled",   "Cattywampus", "Snickersnee", "Abibliophobia",
-                                      "Absquatulate", "Nincompoop",  "Pauciloquent" };
-        for( int n = 0; n < 5; n++ )
-        {
-            const char* category = categories[counter % IM_ARRAYSIZE( categories )];
-            const char* word     = words[counter % IM_ARRAYSIZE( words )];
-            AppLog::get()->AddLog(
-                "[%05d] [%s] Hello, current time is %.1f, here's a word: '%s'\n", ImGui::GetFrameCount(), category,
-                ImGui::GetTime(), word );
-            counter++;
-        }
-    }
-    ImGui::End();
-
-    // Actually call in the regular Log helper (which will Begin() into the same window as we just did)
     auto log = AppLog::get();
-    log->Draw( "Example: Log", p_open );
+    log->Draw( p_open );
 }
