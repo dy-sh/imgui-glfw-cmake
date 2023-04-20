@@ -3,8 +3,22 @@
 //
 
 #include "log.h"
+#include <cstdio>
+#include <string>
 
+// singleton
+AppLog* AppLog::get()
+{
+    static AppLog* instance;
 
+    if( !instance )
+    {
+        instance             = new AppLog();
+        instance->AutoScroll = true;
+        instance->Clear();
+    }
+    return instance;
+}
 
 void AppLog::Clear()
 {
@@ -27,7 +41,7 @@ void AppLog::AddLog( const char* fmt, ... )
 
 void AppLog::Draw( const char* title, bool* p_open )
 {
-//    auto log = AppLog::get();
+    //    auto log = AppLog::get();
 
     if( !ImGui::Begin( title, p_open ) )
     {
@@ -101,9 +115,8 @@ void AppLog::Draw( const char* title, bool* p_open )
                 for( int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++ )
                 {
                     const char* line_start = buf + LineOffsets[line_no];
-                    const char* line_end   = ( line_no + 1 < LineOffsets.Size ) ?
-                                                 ( buf + LineOffsets[line_no + 1] - 1 ) :
-                                                 buf_end;
+                    const char* line_end
+                        = ( line_no + 1 < LineOffsets.Size ) ? ( buf + LineOffsets[line_no + 1] - 1 ) : buf_end;
                     ImGui::TextUnformatted( line_start, line_end );
                 }
             }
@@ -119,10 +132,19 @@ void AppLog::Draw( const char* title, bool* p_open )
     ImGui::EndChild();
     ImGui::End();
 }
-void AppLog::Add( const char* fmt, ... ) {
-    auto log= AppLog::get();
+void AppLog::Add( const char* fmt, ... )
+{
+    auto log = AppLog::get();
+
     va_list args;
-    log->AddLog(fmt, args);
+    va_start( args, fmt );
+
+    int length = vsnprintf( nullptr, 0, fmt, args ); // Determine the length of the formatted string
+    std::string buffer( length, '\0' );              // Allocate a buffer to store the formatted string
+    vsnprintf( &buffer[0], length + 1, fmt, args );  // Format the string into the buffer
+    log->AddLog( "%s", buffer.c_str() );             // Add the formatted string to the log
+
+    va_end( args );
 }
 
 void ShowAppLog( bool* p_open )

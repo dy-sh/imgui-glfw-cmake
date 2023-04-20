@@ -2,19 +2,23 @@
 // Created by Dmitry Savosh on 19.04.2023.
 //
 
+//-----------------------------------------------------------------------------
+// Debug log
+//-----------------------------------------------------------------------------
+// Usage:
+//  include "log.h;
+//
+//  LOG("Hello %d world\n", 123);
+//  or:
+//  AppLog::Add("Hello %d world\n", 123);
+
 #ifndef IMGUI_GLFW_LOG_H
 #define IMGUI_GLFW_LOG_H
 
 #include "imgui/imgui.h"
 
-//-----------------------------------------------------------------------------
-// [SECTION] Example App: Debug Log / ShowExampleAppLog()
-//-----------------------------------------------------------------------------
+#define LOG(fmt, ...) AppLog::Add(fmt, ##__VA_ARGS__)
 
-// Usage:
-//  static AppLog my_log;
-//  my_log.AddLog("Hello %d world\n", 123);
-//  my_log.Draw("title");
 struct AppLog
 {
 private:
@@ -23,16 +27,7 @@ private:
     AppLog& operator=(const AppLog&) = delete;
 
 public:
-    static AppLog* get() {
-        static AppLog* instance;
-
-        if (!instance) {
-            instance = new AppLog();
-            instance->AutoScroll = true;
-            instance->Clear();
-        }
-        return instance;
-    }
+    static AppLog* get();
 
     ImGuiTextBuffer Buf;
     ImGuiTextFilter Filter;

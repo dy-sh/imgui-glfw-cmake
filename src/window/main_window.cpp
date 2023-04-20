@@ -60,13 +60,15 @@ void ShowMainWindow()
     }
 
     if( ImGui::Button( "Simple Button" ) )
+    {
         counter++;
+    }
     ImGui::SameLine();
     ImGui::Text( "counter = %d", counter );
 
     if( ImGui::Button( "Test Log" ) )
     {
-        AppLog::Add( "Hello %d world\n", 123 );
+        LOG( "Hello %d world\n", 123 );
         show_app_log = true;
     }
 
