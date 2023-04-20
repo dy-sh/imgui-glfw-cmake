@@ -57,7 +57,7 @@ void apply_custom_style( ImVec4& bg_color, ImGuiStyle* dst = NULL )
 
     colors[ImGuiCol_Text]                 = TEXT_COLOR;
     colors[ImGuiCol_TextDisabled]         = TEXT_DISABLED_COLOR;
-    colors[ImGuiCol_TextSelectedBg]       = BACKGROUND_COLOR_1;
+    colors[ImGuiCol_TextSelectedBg]       = ELEMENT_VERY_BRIGHT_COLOR;
     colors[ImGuiCol_WindowBg]             = WINDOW_BG_COLOR;
     colors[ImGuiCol_ChildBg]              = WINDOW_BG_COLOR;
     colors[ImGuiCol_MenuBarBg]            = ELEMENT_DARK_COLOR;

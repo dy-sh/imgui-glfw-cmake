@@ -15,6 +15,6 @@ extern bool show_main_window;
 
 void ShowLoginWindow();
 
-bool checkCredentials( char login[LOGIN_LENGTH], char password[PASS_LENGTH] );
+bool CheckCredentials( char login[LOGIN_LENGTH], char password[PASS_LENGTH] );
 
 #endif // IMGUI_GLFW_LOGIN_WINDOW_H

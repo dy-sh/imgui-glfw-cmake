@@ -10,8 +10,8 @@ using namespace std;
 string correct_login    = "1";
 string correct_password = "";
 
-constexpr int LOGIN_WINDOW_WIDTH  = 400;
-constexpr int LOGIN_WINDOW_HEIGHT = 230;
+constexpr float LOGIN_WINDOW_WIDTH  = 400;
+constexpr float LOGIN_WINDOW_HEIGHT = 230;
 
 void SetLoginWindowPos()
 {
@@ -33,17 +33,6 @@ void ShowLoginWindow()
         "Authorization", &show_login_window,
         ImGuiWindowFlags_Modal | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse );
 
-    //
-    //
-    //    ImGui::Text( "Hello from another window!" );
-    //    if( ImGui::Button( "Close Me" ) )
-    //        show_login_window = false;
-    //
-    //
-    //    ImGui::Text("Button:");
-    //    ImGui::SameLine();
-    //    ImGui::Button("CLick me");
-
     static char login[LOGIN_LENGTH]   = "";
     static char password[PASS_LENGTH] = "";
 
@@ -56,7 +45,7 @@ void ShowLoginWindow()
     ImGui::SetCursorPos( { 100, 150 } );
     if( ImGui::Button( "Enter", { 200, 30 } ) )
     {
-        if( checkCredentials( login, password ) )
+        if( CheckCredentials( login, password ) )
         {
             incorrectCredentials = false;
             show_main_window     = true;
@@ -77,7 +66,7 @@ void ShowLoginWindow()
     ImGui::End();
 }
 
-bool checkCredentials( char login[LOGIN_LENGTH], char password[PASS_LENGTH] )
+bool CheckCredentials( char login[LOGIN_LENGTH], char password[PASS_LENGTH] )
 {
     return login == correct_login && password == correct_password;
 }

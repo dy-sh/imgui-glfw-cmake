@@ -16,16 +16,14 @@ bool show_debug_toolbar = true;
 bool show_login_window = false;
 bool show_main_window  = true;
 
-static bool show_app_console = false;
-static bool show_app_log     = false;
-
-static bool show_demo_window = true;
-
-static bool show_app_metrics      = false;
-static bool show_app_debug_log    = false;
-static bool show_app_stack_tool   = false;
-static bool show_app_about        = false;
-static bool show_app_style_editor = false;
+bool show_app_console      = false;
+bool show_app_log          = false;
+bool show_app_metrics      = false;
+bool show_app_debug_log    = false;
+bool show_app_stack_tool   = false;
+bool show_app_about        = false;
+bool show_app_style_editor = false;
+bool show_demo_window      = false;
 
 extern GLFWwindow* g_window;
 
@@ -49,8 +47,8 @@ static void ShowWindows()
     if( show_main_window && !show_login_window )
         ShowMainWindow();
 
-    if (show_demo_window)
-        ImGui::ShowDemoWindow(&show_demo_window);
+    if( show_demo_window )
+        ImGui::ShowDemoWindow( &show_demo_window );
 
     if( show_app_console )
         ShowAppConsole( &show_app_console );

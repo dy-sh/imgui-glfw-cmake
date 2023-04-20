@@ -10,6 +10,7 @@ bool maximize_main_window = false;
 
 extern bool show_login_window;
 extern bool show_main_window;
+extern bool show_app_log;
 
 static float OriginalWindowRounding;
 
@@ -41,19 +42,24 @@ void ShowMainWindow()
     if( maximize_main_window )
     {
         MaximizeMainWindow();
-        ImGui::Begin( "Main", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus );
-    }else{
+        ImGui::Begin(
+            "Main", &show_main_window,
+            ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus );
+    }
+    else
+    {
         ImGui::Begin( "Main", NULL, ImGuiWindowFlags_NoBringToFrontOnFocus );
-
     }
 
     static int counter = 0;
     ImGui::Text( "Hello, world!" );
 
-    ImGui::Text( "Windows" );
-    ImGui::Checkbox( "Login", &show_login_window );
+    if( ImGui::Button( "Authorization" ) )
+    {
+        show_login_window = true;
+    }
 
-    if( ImGui::Button( "Button" ) )
+    if( ImGui::Button( "Simple Button" ) )
         counter++;
     ImGui::SameLine();
     ImGui::Text( "counter = %d", counter );
@@ -61,11 +67,8 @@ void ShowMainWindow()
     if( ImGui::Button( "Test Log" ) )
     {
         AppLog::Add( "Hello %d world\n", 123 );
+        show_app_log = true;
     }
-
-    static float pr = 30;
-    ImGui::SliderFloat( "Prog", &pr, 0, 100 );
-    ImGui::ProgressBar( pr / 100, ImVec2( 380, 27 ) );
 
     ImGui::End();
 
