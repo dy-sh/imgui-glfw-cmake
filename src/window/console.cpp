@@ -139,7 +139,7 @@ void AppConsole::Draw( const char* title, bool* p_open )
         AddLog( "display very important message here!" );
     }
     ImGui::SameLine();
-    if( ImGui::SmallButton( "Add Debug Error" ) )
+    if( ImGui::SmallButton( "Add Debug Err" ) )
     {
         AddLog( "[error] something went wrong" );
     }
@@ -150,7 +150,7 @@ void AppConsole::Draw( const char* title, bool* p_open )
     }
     ImGui::SameLine();
     bool copy_to_clipboard = ImGui::SmallButton( "Copy" );
-    // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddLog("Spam %f", t); }
+    // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddMessage("Spam %f", t); }
 
     ImGui::Separator();
 
@@ -315,7 +315,7 @@ void AppConsole::ExecCommand( const char* command_line )
 
 int AppConsole::TextEditCallback( ImGuiInputTextCallbackData* data )
 {
-    // AddLog("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
+    // AddMessage("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
     switch( data->EventFlag )
     {
         case ImGuiInputTextFlags_CallbackCompletion:

@@ -53,7 +53,7 @@ static void ShowWindows()
     if( show_app_console )
         ShowAppConsole( &show_app_console );
     if( show_app_log )
-        AppLog::Show( &show_app_log );
+        AppLog::Draw( &show_app_log );
     if( show_app_metrics )
         ImGui::ShowMetricsWindow( &show_app_metrics );
     if( show_app_debug_log )

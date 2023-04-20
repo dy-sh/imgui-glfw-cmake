@@ -10,18 +10,18 @@ Usage:
 
 enum class LogLevel
 {
-    Info,
-    Warn,
-    Error
+    Inf,
+    War,
+    Err
 };
 
-ENUM_TO_STRING( LogLevel, "Info", "Warn", "Error" )
+ENUM_TO_STRING( LogLevel, "Inf", "War", "Err" )
 
 
 */
 
 #define ENUM_TO_STRING(EnumType, ...) \
-    inline std::string ToString(EnumType value) \
+    inline const char* ToString(EnumType value) \
     { \
         static const char* const values[] = { __VA_ARGS__ }; \
         return values[static_cast<int>(value)]; \

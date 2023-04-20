@@ -6,37 +6,21 @@
 #include <cstdio>
 #include <iomanip>
 
-// singleton
-AppLog* AppLog::get()
-{
-    static AppLog* instance;
-
-    if( !instance )
-    {
-        instance             = new AppLog();
-        instance->AutoScroll = true;
-        instance->Clear();
-    }
-    return instance;
-}
-
-void AppLog::Clear()
+void AppLogWindow::Clear()
 {
     Buf.clear();
     LineOffsets.clear();
     LineOffsets.push_back( 0 );
 }
 
-void AppLog::AddLog( LogLevel level, const char* fmt, ... )
+void AppLogWindow::Add( LogLevel level, const char* fmt, ... )
 {
     std::ostringstream oss;
 
-    // append current time
-    oss << "[" << std::fixed << std::setprecision( 2 ) << ImGui::GetTime() << "] ";
-
     // append LogLevel
     oss << "[" << ToString( level ) << "] ";
-
+    // append current time
+    oss << "[" << std::fixed << std::setprecision( 2 ) << ImGui::GetTime() << "] ";
     // append message
     oss << fmt << "\n";
 
@@ -55,9 +39,9 @@ void AppLog::AddLog( LogLevel level, const char* fmt, ... )
             LineOffsets.push_back( old_size + 1 );
 }
 
-void AppLog::Draw( bool* p_open )
+void AppLogWindow::Draw( const char* title, bool* p_open )
 {
-    if( !ImGui::Begin( "Log", p_open ) )
+    if( !ImGui::Begin( title, p_open ) )
     {
         ImGui::End();
         return;
@@ -72,7 +56,9 @@ void AppLog::Draw( bool* p_open )
 
     // Main window
     if( ImGui::Button( "Options" ) )
+    {
         ImGui::OpenPopup( "Options" );
+    }
     ImGui::SameLine();
     bool clear = ImGui::Button( "Clear" );
     ImGui::SameLine();
@@ -85,9 +71,13 @@ void AppLog::Draw( bool* p_open )
     if( ImGui::BeginChild( "scrolling", ImVec2( 0, 0 ), false, ImGuiWindowFlags_HorizontalScrollbar ) )
     {
         if( clear )
+        {
             Clear();
+        }
         if( copy )
+        {
             ImGui::LogToClipboard();
+        }
 
         ImGui::PushStyleVar( ImGuiStyleVar_ItemSpacing, ImVec2( 0, 0 ) );
         const char* buf     = Buf.begin();
@@ -104,7 +94,7 @@ void AppLog::Draw( bool* p_open )
                 const char* line_end
                     = ( line_no + 1 < LineOffsets.Size ) ? ( buf + LineOffsets[line_no + 1] - 1 ) : buf_end;
                 if( Filter.PassFilter( line_start, line_end ) )
-                    ImGui::TextUnformatted( line_start, line_end );
+                    DrawColorizedLine( line_start, line_end );
             }
         }
         else
@@ -131,7 +121,8 @@ void AppLog::Draw( bool* p_open )
                     const char* line_start = buf + LineOffsets[line_no];
                     const char* line_end
                         = ( line_no + 1 < LineOffsets.Size ) ? ( buf + LineOffsets[line_no + 1] - 1 ) : buf_end;
-                    ImGui::TextUnformatted( line_start, line_end );
+
+                    DrawColorizedLine( line_start, line_end );
                 }
             }
             clipper.End();
@@ -146,6 +137,41 @@ void AppLog::Draw( bool* p_open )
     ImGui::EndChild();
     ImGui::End();
 }
+void AppLogWindow::DrawColorizedLine( const char* line_start, const char* line_end ) const
+{
+    static const char* Warning = ToString( LogLevel::War );
+    static const char* Error   = ToString( LogLevel::Err );
+
+    if( strncmp( line_start + 1, Warning, strlen( Warning ) ) == 0 )
+    {
+        ImGui::PushStyleColor( ImGuiCol_Text, LogColors.WarningColor );
+        ImGui::TextUnformatted( line_start, line_end );
+        ImGui::PopStyleColor();
+    }
+    else if( strncmp( line_start + 1, Error, strlen( Error ) ) == 0 )
+    {
+        ImGui::PushStyleColor( ImGuiCol_Text, LogColors.ErrorColor );
+        ImGui::TextUnformatted( line_start, line_end );
+        ImGui::PopStyleColor();
+    }
+    else
+    {
+        ImGui::TextUnformatted( line_start, line_end );
+    }
+}
+
+AppLogWindow* AppLog::get()
+{
+    static AppLogWindow* instance;
+
+    if( !instance )
+    {
+        instance             = new AppLogWindow();
+        instance->AutoScroll = true;
+        instance->Clear();
+    }
+    return instance;
+}
 
 void AppLog::Add( const char* fmt, ... )
 {
@@ -154,10 +180,10 @@ void AppLog::Add( const char* fmt, ... )
     va_list args;
     va_start( args, fmt );
 
-    int length = vsnprintf( nullptr, 0, fmt, args );     // Determine the length of the formatted string
-    std::string buffer( length, '\0' );                  // Allocate a buffer to store the formatted string
-    vsnprintf( &buffer[0], length + 1, fmt, args );      // Format the string into the buffer
-    log->AddLog( LogLevel::Info, "%s", buffer.c_str() ); // Add the formatted string to the log
+    int length = vsnprintf( nullptr, 0, fmt, args ); // Determine the length of the formatted string
+    std::string buffer( length, '\0' );              // Allocate a buffer to store the formatted string
+    vsnprintf( &buffer[0], length + 1, fmt, args );  // Format the string into the buffer
+    log->Add( LogLevel::Inf, "%s", buffer.c_str() ); // Add the formatted string to the log
 
     va_end( args );
 }
@@ -172,13 +198,13 @@ void AppLog::Add( LogLevel level, const char* fmt, ... )
     int length = vsnprintf( nullptr, 0, fmt, args ); // Determine the length of the formatted string
     std::string buffer( length, '\0' );              // Allocate a buffer to store the formatted string
     vsnprintf( &buffer[0], length + 1, fmt, args );  // Format the string into the buffer
-    log->AddLog( level, "%s", buffer.c_str() );      // Add the formatted string to the log
+    log->Add( level, "%s", buffer.c_str() );         // Add the formatted string to the log
 
     va_end( args );
 }
 
-void AppLog::Show( bool* p_open )
+void AppLog::Draw( bool* p_open )
 {
     auto log = AppLog::get();
-    log->Draw( p_open );
+    log->Draw( "Log", p_open );
 }
