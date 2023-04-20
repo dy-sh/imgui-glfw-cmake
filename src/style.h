@@ -51,6 +51,7 @@ void apply_custom_style( ImVec4& bg_color, ImGuiStyle* dst = NULL )
     constexpr ImVec4 TITLE_ACTIVE_COLOR        = Brigter( ELEMENT_DARK_COLOR, 0.8 );
     constexpr ImVec4 TEXT_COLOR                = ImVec4( 0.95, 0.95 * HUE_G, 0.95 * HUE_B, 1.0 );
     constexpr ImVec4 TEXT_DISABLED_COLOR       = Brigter( TEXT_COLOR, 0.4f );
+    constexpr ImVec4 TRANSPARENT_COLOR         = ImVec4( 0, 0, 0, 0 );
 
     bg_color = ImVec4( 0.11, 0.11 * HUE_G, 0.11 * HUE_B, 1.00 );
 
@@ -82,8 +83,8 @@ void apply_custom_style( ImVec4& bg_color, ImGuiStyle* dst = NULL )
     colors[ImGuiCol_Header]               = ELEMENT_BRIGHT_COLOR;
     colors[ImGuiCol_HeaderHovered]        = ACCENT_COLOR_1;
     colors[ImGuiCol_HeaderActive]         = ACCENT_COLOR_1_BRIGHTER;
-    colors[ImGuiCol_ResizeGrip]           = WINDOW_BG_COLOR;
-    colors[ImGuiCol_ResizeGripHovered]    = WINDOW_BG_COLOR;
+    colors[ImGuiCol_ResizeGrip]           = TRANSPARENT_COLOR;
+    colors[ImGuiCol_ResizeGripHovered]    = TRANSPARENT_COLOR;
     colors[ImGuiCol_ResizeGripActive]     = ACCENT_COLOR_1;
     colors[ImGuiCol_PlotLines]            = ACCENT_COLOR_2;
     colors[ImGuiCol_PlotLinesHovered]     = ACCENT_COLOR_2_BRIGHTER;
