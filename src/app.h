@@ -5,9 +5,10 @@
 #ifndef IMGUI_GLFW_APP_H
 #define IMGUI_GLFW_APP_H
 
+#include "debug.h"
+#include "debug/console.h"
+#include "debug/log.h"
 #include "imgui/imgui.h"
-#include "window/console.h"
-#include "window/log.h"
 #include "window/login_window.h"
 #include "window/main_window.h"
 

@@ -65,7 +65,7 @@ set( MAIN_APP_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/opengl3.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/glfw.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/fonts.cpp src/window/main_window.cpp src/window/main_window.h src/window/login_window.cpp src/window/login_window.h src/style.h src/app.h src/window/console.cpp src/window/console.h src/window/log.cpp src/window/log.h src/utils.h)
+    ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/fonts.cpp src/window/main_window.cpp src/window/main_window.h src/window/login_window.cpp src/window/login_window.h src/style.h src/app.h src/debug/console.cpp src/debug/console.h src/debug/log.cpp src/debug/log.h src/utils.h src/debug.h src/debug.cpp)
 
 set( MAIN_APP_NAME imguiapp )
 

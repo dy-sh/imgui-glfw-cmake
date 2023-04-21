@@ -3,8 +3,9 @@
 //
 
 #include "main_window.h"
+#include "../debug.h"
+#include "../debug/log.h"
 #include "imgui/imgui.h"
-#include "log.h"
 
 bool maximize_main_window = false;
 
