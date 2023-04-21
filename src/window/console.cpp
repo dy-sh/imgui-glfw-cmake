@@ -3,44 +3,23 @@
 //
 
 #include "console.h"
+#include "../utils.h"
+#include <string>
 
-// System includes
-#include <ctype.h>  // toupper
-#include <limits.h> // INT_MIN, INT_MAX
-#include <math.h>   // sqrtf, powf, cosf, sinf, floorf, ceilf
-#include <stdint.h> // intptr_t
-#include <stdio.h>  // vsnprintf, sscanf, printf
-#include <stdlib.h> // NULL, malloc, free, atoi
-
-//-----------------------------------------------------------------------------
-// [SECTION] Example App: Debug Console / ShowExampleAppConsole()
-//-----------------------------------------------------------------------------
-
-// Demonstrate creating a simple console window, with scrolling, filtering, completion and history.
-// For the console example, we are using a more C++ like approach of declaring a class to hold both data and functions.
-
-// In C++11 you'd be better off using lambdas for this sort of forwarding callbacks
 static int TextEditCallbackStub( ImGuiInputTextCallbackData* data )
 {
-    AppConsole* console = (AppConsole*)data->UserData;
+    auto* console = (AppConsole*)data->UserData;
     return console->TextEditCallback( data );
 }
 
 AppConsole::AppConsole()
 {
     ClearLog();
-    memset( InputBuf, 0, sizeof( InputBuf ) );
-    HistoryPos = -1;
-
-    // "CLASSIFY" is here to provide the test case where "C"+[tab] completes to "CL" and display multiple matches.
     Commands.push_back( "HELP" );
     Commands.push_back( "HISTORY" );
     Commands.push_back( "CLEAR" );
-    Commands.push_back( "CLASSIFY" );
-    AutoScroll     = true;
-    ScrollToBottom = false;
-    AddLog( "Welcome to Dear ImGui!" );
 }
+
 AppConsole::~AppConsole()
 {
     ClearLog();
@@ -48,43 +27,7 @@ AppConsole::~AppConsole()
         free( History[i] );
 }
 
-// Portable helpers
-static int Stricmp( const char* s1, const char* s2 )
-{
-    int d;
-    while( ( d = toupper( *s2 ) - toupper( *s1 ) ) == 0 && *s1 )
-    {
-        s1++;
-        s2++;
-    }
-    return d;
-}
-static int Strnicmp( const char* s1, const char* s2, int n )
-{
-    int d = 0;
-    while( n > 0 && ( d = toupper( *s2 ) - toupper( *s1 ) ) == 0 && *s1 )
-    {
-        s1++;
-        s2++;
-        n--;
-    }
-    return d;
-}
-static char* Strdup( const char* s )
-{
-    IM_ASSERT( s );
-    size_t len = strlen( s ) + 1;
-    void* buf  = malloc( len );
-    IM_ASSERT( buf );
-    return (char*)memcpy( buf, (const void*)s, len );
-}
-static void Strtrim( char* s )
-{
-    char* str_end = s + strlen( s );
-    while( str_end > s && str_end[-1] == ' ' )
-        str_end--;
-    *str_end = 0;
-}
+
 
 void AppConsole::ClearLog()
 {
@@ -119,16 +62,10 @@ void AppConsole::Draw( const char* title, bool* p_open )
     // Here we create a context menu only available from the title bar.
     if( ImGui::BeginPopupContextItem() )
     {
-        if( ImGui::MenuItem( "Close Console" ) )
+        if( ImGui::MenuItem( "Close" ) )
             *p_open = false;
         ImGui::EndPopup();
     }
-
-    ImGui::TextWrapped(
-        "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A "
-        "more elaborate "
-        "implementation may want to store entries along with extra data such as timestamp, emitter, etc." );
-    ImGui::TextWrapped( "Enter 'HELP' for help." );
 
     // TODO: display items starting from the bottom
 
@@ -139,9 +76,11 @@ void AppConsole::Draw( const char* title, bool* p_open )
         AddLog( "display very important message here!" );
     }
     ImGui::SameLine();
-    if( ImGui::SmallButton( "Add Debug Err" ) )
+    if( ImGui::SmallButton( "Add Debug err" ) )
     {
-        AddLog( "[error] something went wrong" );
+        AddLog( "[inf] something ok" );
+        AddLog( "[wrn] something important" );
+        AddLog( "[err] something critical" );
     }
     ImGui::SameLine();
     if( ImGui::SmallButton( "Clear" ) )
@@ -150,6 +89,11 @@ void AppConsole::Draw( const char* title, bool* p_open )
     }
     ImGui::SameLine();
     bool copy_to_clipboard = ImGui::SmallButton( "Copy" );
+    ImGui::SameLine();
+    if( ImGui::SmallButton( "Help" ) )
+    {
+        Help();
+    }
     // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddMessage("Spam %f", t); }
 
     ImGui::Separator();
@@ -165,7 +109,7 @@ void AppConsole::Draw( const char* title, bool* p_open )
     if( ImGui::Button( "Options" ) )
         ImGui::OpenPopup( "Options" );
     ImGui::SameLine();
-    Filter.Draw( "Filter (\"incl,-excl\") (\"error\")", 180 );
+    Filter.Draw( "Filter", 180 );
     ImGui::Separator();
 
     // Reserve enough left-over height for 1 separator + 1 input text
@@ -217,9 +161,14 @@ void AppConsole::Draw( const char* title, bool* p_open )
             // (e.g. make Items[] an array of structure, store color/type etc.)
             ImVec4 color;
             bool has_color = false;
-            if( strstr( item, "[error]" ) )
+            if( strstr( item, "[err]" ) )
             {
-                color     = ImVec4( 1.0f, 0.4f, 0.4f, 1.0f );
+                color     = ConsoleColors.ErrorColor;
+                has_color = true;
+            }
+            else if(strstr( item, "[wrn]" ) )
+            {
+                color     = ConsoleColors.WarningColor;
                 has_color = true;
             }
             else if( strncmp( item, "# ", 2 ) == 0 )
@@ -294,9 +243,7 @@ void AppConsole::ExecCommand( const char* command_line )
     }
     else if( Stricmp( command_line, "HELP" ) == 0 )
     {
-        AddLog( "Commands:" );
-        for( int i = 0; i < Commands.Size; i++ )
-            AddLog( "- %s", Commands[i] );
+        Help();
     }
     else if( Stricmp( command_line, "HISTORY" ) == 0 )
     {
@@ -311,6 +258,19 @@ void AppConsole::ExecCommand( const char* command_line )
 
     // On command input, we scroll to bottom even if AutoScroll==false
     ScrollToBottom = true;
+}
+void AppConsole::Help()
+{
+    AddLog(
+        "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A "
+        "more elaborate "
+        "implementation may want to store entries along with extra data such as timestamp, emitter, etc." );
+    AddLog("Filter syntax:  \"inclide, -exclude\" (example: \"help, -hist\")");
+    AddLog( "Commands:" );
+    for( int i = 0; i < Commands.Size; i++ )
+        AddLog( "- %s", Commands[i] );
+
+    Filter.Clear();
 }
 
 int AppConsole::TextEditCallback( ImGuiInputTextCallbackData* data )

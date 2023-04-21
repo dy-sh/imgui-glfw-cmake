@@ -6,6 +6,11 @@
 #include <cstdio>
 #include <iomanip>
 
+AppLogWindow::AppLogWindow()
+{
+    Clear();
+}
+
 void AppLogWindow::Clear()
 {
     Buf.clear();
@@ -139,8 +144,8 @@ void AppLogWindow::Draw( const char* title, bool* p_open )
 }
 void AppLogWindow::DrawColorizedLine( const char* line_start, const char* line_end ) const
 {
-    static const char* Warning = ToString( LogLevel::War );
-    static const char* Error   = ToString( LogLevel::Err );
+    static const char* Warning = ToString( LogLevel::wrn );
+    static const char* Error   = ToString( LogLevel::err );
 
     if( strncmp( line_start + 1, Warning, strlen( Warning ) ) == 0 )
     {
@@ -160,16 +165,15 @@ void AppLogWindow::DrawColorizedLine( const char* line_start, const char* line_e
     }
 }
 
+
+
 AppLogWindow* AppLog::get()
 {
     static AppLogWindow* instance;
 
     if( !instance )
-    {
-        instance             = new AppLogWindow();
-        instance->AutoScroll = true;
-        instance->Clear();
-    }
+        instance = new AppLogWindow();
+
     return instance;
 }
 
@@ -183,7 +187,7 @@ void AppLog::Add( const char* fmt, ... )
     int length = vsnprintf( nullptr, 0, fmt, args ); // Determine the length of the formatted string
     std::string buffer( length, '\0' );              // Allocate a buffer to store the formatted string
     vsnprintf( &buffer[0], length + 1, fmt, args );  // Format the string into the buffer
-    log->Add( LogLevel::Inf, "%s", buffer.c_str() ); // Add the formatted string to the log
+    log->Add( LogLevel::inf, "%s", buffer.c_str() ); // Add the formatted string to the log
 
     va_end( args );
 }

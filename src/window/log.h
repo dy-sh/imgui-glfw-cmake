@@ -9,7 +9,7 @@
 //  include "log.h;
 //
 //  LOG("Hello %d world\n", 123);
-//  AppLog::Add(LogLevel::War, "Hello %d world\n", 123);
+//  AppLog::Add(LogLevel::wrn, "Hello %d world\n", 123);
 
 #ifndef IMGUI_GLFW_LOG_H
 #define IMGUI_GLFW_LOG_H
@@ -23,12 +23,12 @@
 
 enum class LogLevel
 {
-    Inf,
-    War,
-    Err
+    inf,
+    wrn,
+    err
 };
 
-ENUM_TO_STRING( LogLevel, "Inf", "War", "Err" )
+ENUM_TO_STRING( LogLevel, "inf", "wrn", "err" )
 
 struct AppLogColors
 {
@@ -38,18 +38,22 @@ struct AppLogColors
 
 struct AppLogWindow
 {
+    AppLogWindow();
+
     AppLogColors LogColors;
 
     ImGuiTextBuffer Buf;
     ImGuiTextFilter Filter;
     ImVector<int> LineOffsets; // Index to lines offset. We maintain this with AddMessage() calls.
-    bool AutoScroll;           // Keep scrolling if already at the bottom.
+    bool AutoScroll=true;           // Keep scrolling if already at the bottom.
 
     void Clear();
     void Add( LogLevel level, const char* fmt, ... ) IM_FMTARGS( 3 );
     void Draw( const char* title, bool* p_open = NULL );
     void DrawColorizedLine( const char* line_start, const char* line_end ) const;
 };
+
+//AppLogColors AppLogWindow::LogColors;
 
 // Singleton
 struct AppLog
