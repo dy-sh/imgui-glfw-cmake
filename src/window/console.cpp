@@ -5,6 +5,7 @@
 #include "console.h"
 #include "../utils.h"
 #include <string>
+#include <vector>
 
 static int TextEditCallbackStub( ImGuiInputTextCallbackData* data )
 {
@@ -26,8 +27,6 @@ AppConsole::~AppConsole()
     for( int i = 0; i < History.Size; i++ )
         free( History[i] );
 }
-
-
 
 void AppConsole::ClearLog()
 {
@@ -69,20 +68,6 @@ void AppConsole::Draw( const char* title, bool* p_open )
 
     // TODO: display items starting from the bottom
 
-    if( ImGui::SmallButton( "Add Debug Text" ) )
-    {
-        AddLog( "%d some text", Items.Size );
-        AddLog( "some more text" );
-        AddLog( "display very important message here!" );
-    }
-    ImGui::SameLine();
-    if( ImGui::SmallButton( "Add Debug err" ) )
-    {
-        AddLog( "[inf] something ok" );
-        AddLog( "[wrn] something important" );
-        AddLog( "[err] something critical" );
-    }
-    ImGui::SameLine();
     if( ImGui::SmallButton( "Clear" ) )
     {
         ClearLog();
@@ -94,9 +79,15 @@ void AppConsole::Draw( const char* title, bool* p_open )
     {
         Help();
     }
-    // static float t = 0.0f; if (ImGui::GetTime() - t > 0.02f) { t = ImGui::GetTime(); AddMessage("Spam %f", t); }
 
-    ImGui::Separator();
+    static bool spam = false;
+    ImGui::SameLine();
+    if( ImGui::SmallButton( "Spam" ) )
+        spam = !spam;
+    if( spam )
+        AddLog( "Spam %f", ImGui::GetTime() );
+
+    //    ImGui::Separator();
 
     // Options menu
     if( ImGui::BeginPopup( "Options" ) )
@@ -106,7 +97,8 @@ void AppConsole::Draw( const char* title, bool* p_open )
     }
 
     // Options, Filter
-    if( ImGui::Button( "Options" ) )
+    ImGui::SameLine();
+    if( ImGui::SmallButton( "Options" ) )
         ImGui::OpenPopup( "Options" );
     ImGui::SameLine();
     Filter.Draw( "Filter", 180 );
@@ -166,12 +158,12 @@ void AppConsole::Draw( const char* title, bool* p_open )
                 color     = ConsoleColors.ErrorColor;
                 has_color = true;
             }
-            else if(strstr( item, "[wrn]" ) )
+            else if( strstr( item, "[wrn]" ) )
             {
                 color     = ConsoleColors.WarningColor;
                 has_color = true;
             }
-            else if( strncmp( item, "# ", 2 ) == 0 )
+            else if( strncmp( item, "# ", 2 ) == 0 ) // user command
             {
                 color     = ImVec4( 1.0f, 0.8f, 0.6f, 1.0f );
                 has_color = true;
@@ -261,11 +253,14 @@ void AppConsole::ExecCommand( const char* command_line )
 }
 void AppConsole::Help()
 {
-    AddLog(
-        "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A "
-        "more elaborate "
-        "implementation may want to store entries along with extra data such as timestamp, emitter, etc." );
-    AddLog("Filter syntax:  \"inclide, -exclude\" (example: \"help, -hist\")");
+    AddLog( "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A "
+            "more elaborate "
+            "implementation may want to store entries along with extra data such as timestamp, emitter, etc." );
+    AddLog( "Log levels:" );
+    AddLog( "[inf] something ok" );
+    AddLog( "[wrn] something important" );
+    AddLog( "[err] something critical" );
+    AddLog( R"(Filter syntax:  "inclide, -exclude" (example: "help, -hist, -wrn"))" );
     AddLog( "Commands:" );
     for( int i = 0; i < Commands.Size; i++ )
         AddLog( "- %s", Commands[i] );
