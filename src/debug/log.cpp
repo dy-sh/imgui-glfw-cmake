@@ -33,6 +33,7 @@ void AppLogWindow::Add( const char* fmt, ... )
 
 void AppLogWindow::Draw( const char* title, bool* p_open )
 {
+    ImGui::SetNextWindowSize( ImVec2( 700, 400 ), ImGuiCond_FirstUseEver );
     if( !ImGui::Begin( title, p_open ) )
     {
         ImGui::End();

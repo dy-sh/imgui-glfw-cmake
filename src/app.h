@@ -13,13 +13,14 @@
 #include "window/main_window.h"
 
 bool show_debug_toolbar  = true;
-bool use_key_for_log     = true;
-bool use_key_for_console = true;
+bool use_key_for_log     = true;  // alt + x
+bool use_key_for_console = true;  // alt + c
+bool use_esc_key         = true;  // esc
 
 bool show_login_window = false;
 bool show_main_window  = true;
 
-bool show_app_console      = true;
+bool show_app_console      = false;
 bool show_app_log          = false;
 bool show_app_metrics      = false;
 bool show_app_debug_log    = false;
@@ -34,7 +35,7 @@ static void ShowDebugToolbar();
 
 static void ShowWindows()
 {
-    if( ImGui::IsKeyPressed( ImGuiKey::ImGuiKey_Escape ) )
+    if( use_esc_key && ImGui::IsKeyPressed( ImGuiKey::ImGuiKey_Escape ) )
         glfwSetWindowShouldClose( g_window, true );
 
     if( use_key_for_log && ImGui::IsKeyPressed( ImGuiKey::ImGuiKey_X )
@@ -58,9 +59,9 @@ static void ShowWindows()
         ImGui::ShowDemoWindow( &show_demo_window );
 
     if( show_app_console )
-        ShowAppConsole( &show_app_console );
+        AppConsole::Draw( "Console", &show_app_console );
     if( show_app_log )
-        AppLog::Draw( &show_app_log );
+        AppLog::Draw( "Log", &show_app_log );
     if( show_app_metrics )
         ImGui::ShowMetricsWindow( &show_app_metrics );
     if( show_app_debug_log )

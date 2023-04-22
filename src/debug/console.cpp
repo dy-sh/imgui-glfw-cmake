@@ -9,11 +9,11 @@
 
 static int TextEditCallbackStub( ImGuiInputTextCallbackData* data )
 {
-    auto* console = (AppConsole*)data->UserData;
+    auto* console = (AppConsoleWindow*)data->UserData;
     return console->TextEditCallback( data );
 }
 
-AppConsole::AppConsole()
+AppConsoleWindow::AppConsoleWindow()
 {
     ClearLog();
     Commands.push_back( "HELP" );
@@ -21,21 +21,21 @@ AppConsole::AppConsole()
     Commands.push_back( "CLEAR" );
 }
 
-AppConsole::~AppConsole()
+AppConsoleWindow::~AppConsoleWindow()
 {
     ClearLog();
     for( int i = 0; i < History.Size; i++ )
         free( History[i] );
 }
 
-void AppConsole::ClearLog()
+void AppConsoleWindow::ClearLog()
 {
     for( int i = 0; i < Items.Size; i++ )
         free( Items[i] );
     Items.clear();
 }
 
-void AppConsole::AddLog( const char* fmt, ... )
+void AppConsoleWindow::Add( const char* fmt, ... )
 {
     // FIXME-OPT
     char buf[1024];
@@ -47,9 +47,9 @@ void AppConsole::AddLog( const char* fmt, ... )
     Items.push_back( Strdup( buf ) );
 }
 
-void AppConsole::Draw( const char* title, bool* p_open )
+void AppConsoleWindow::Draw( const char* title, bool* p_open )
 {
-    ImGui::SetNextWindowSize( ImVec2( 520, 600 ), ImGuiCond_FirstUseEver );
+    ImGui::SetNextWindowSize( ImVec2( 700, 400 ), ImGuiCond_FirstUseEver );
     if( !ImGui::Begin( title, p_open ) )
     {
         ImGui::End();
@@ -85,7 +85,7 @@ void AppConsole::Draw( const char* title, bool* p_open )
     if( ImGui::SmallButton( "Spam" ) )
         spam = !spam;
     if( spam )
-        AddLog( "Spam %f", ImGui::GetTime() );
+        Add( "Spam %f", ImGui::GetTime() );
 
     //    ImGui::Separator();
 
@@ -212,9 +212,9 @@ void AppConsole::Draw( const char* title, bool* p_open )
     ImGui::End();
 }
 
-void AppConsole::ExecCommand( const char* command_line )
+void AppConsoleWindow::ExecCommand( const char* command_line )
 {
-    AddLog( "# %s\n", command_line );
+    Add( "# %s\n", command_line );
 
     // Insert into history. First find match and delete it so it can be pushed to the back.
     // This isn't trying to be smart or optimal.
@@ -241,34 +241,34 @@ void AppConsole::ExecCommand( const char* command_line )
     {
         int first = History.Size - 10;
         for( int i = first > 0 ? first : 0; i < History.Size; i++ )
-            AddLog( "%3d: %s\n", i, History[i] );
+            Add( "%3d: %s\n", i, History[i] );
     }
     else
     {
-        AddLog( "Unknown command: '%s'\n", command_line );
+        Add( "Unknown command: '%s'\n", command_line );
     }
 
     // On command input, we scroll to bottom even if AutoScroll==false
     ScrollToBottom = true;
 }
-void AppConsole::Help()
+void AppConsoleWindow::Help()
 {
-    AddLog( "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A "
-            "more elaborate "
-            "implementation may want to store entries along with extra data such as timestamp, emitter, etc." );
-    AddLog( "Log levels:" );
-    AddLog( "[inf] something ok" );
-    AddLog( "[wrn] something important" );
-    AddLog( "[err] something critical" );
-    AddLog( R"(Filter syntax:  "inclide, -exclude" (example: "help, -hist, -wrn"))" );
-    AddLog( "Commands:" );
+    Add( "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A "
+         "more elaborate "
+         "implementation may want to store entries along with extra data such as timestamp, emitter, etc." );
+    Add( "Log levels:" );
+    Add( "[inf] something ok" );
+    Add( "[wrn] something important" );
+    Add( "[err] something critical" );
+    Add( R"(Filter syntax:  "inclide, -exclude" (example: "help, -hist, -wrn"))" );
+    Add( "Commands:" );
     for( int i = 0; i < Commands.Size; i++ )
-        AddLog( "- %s", Commands[i] );
+        Add( "- %s", Commands[i] );
 
     Filter.Clear();
 }
 
-int AppConsole::TextEditCallback( ImGuiInputTextCallbackData* data )
+int AppConsoleWindow::TextEditCallback( ImGuiInputTextCallbackData* data )
 {
     // AddMessage("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
     switch( data->EventFlag )
@@ -297,7 +297,7 @@ int AppConsole::TextEditCallback( ImGuiInputTextCallbackData* data )
             if( candidates.Size == 0 )
             {
                 // No match
-                AddLog( "No match for \"%.*s\"!\n", (int)( word_end - word_start ), word_start );
+                Add( "No match for \"%.*s\"!\n", (int)( word_end - word_start ), word_start );
             }
             else if( candidates.Size == 1 )
             {
@@ -332,9 +332,9 @@ int AppConsole::TextEditCallback( ImGuiInputTextCallbackData* data )
                 }
 
                 // List matches
-                AddLog( "Possible matches:\n" );
+                Add( "Possible matches:\n" );
                 for( int i = 0; i < candidates.Size; i++ )
-                    AddLog( "- %s\n", candidates[i] );
+                    Add( "- %s\n", candidates[i] );
             }
 
             break;
@@ -367,12 +367,4 @@ int AppConsole::TextEditCallback( ImGuiInputTextCallbackData* data )
         }
     }
     return 0;
-}
-
-void ShowAppConsole( bool* p_open )
-{
-    {
-        static AppConsole console;
-        console.Draw( "Example: Console", p_open );
-    }
 }

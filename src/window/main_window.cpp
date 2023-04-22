@@ -4,7 +4,6 @@
 
 #include "main_window.h"
 #include "../debug.h"
-#include "../debug/log.h"
 #include "imgui/imgui.h"
 
 bool maximize_main_window = false;
@@ -12,6 +11,7 @@ bool maximize_main_window = false;
 extern bool show_login_window;
 extern bool show_main_window;
 extern bool show_app_log;
+extern bool show_app_console;
 
 static float OriginalWindowRounding;
 
@@ -49,16 +49,14 @@ void ShowMainWindow()
     }
     else
     {
+        ImGui::SetNextWindowSize( ImVec2( 400, 500 ), ImGuiCond_FirstUseEver );
         ImGui::Begin( "Main", NULL, ImGuiWindowFlags_NoBringToFrontOnFocus );
     }
 
     static int counter = 0;
-    ImGui::Text( "Hello, world!" );
-
-    if( ImGui::Button( "Authorization" ) )
-    {
-        show_login_window = true;
-    }
+    ImGui::Text( "Alt + C - Console" );
+    ImGui::Text( "Alt + X - Log" );
+    ImGui::Text( "Esc - Quit" );
 
     if( ImGui::Button( "Simple Button" ) )
     {
@@ -67,12 +65,27 @@ void ShowMainWindow()
     ImGui::SameLine();
     ImGui::Text( "counter = %d", counter );
 
-    if( ImGui::Button( "Test Log" ) )
+    if( ImGui::Button( "Authorization" ) )
+    {
+        show_login_window = true;
+    }
+
+    if( ImGui::Button( "Add Log message" ) )
     {
         LOG( "Simple %d message example", 123 );
         LOG(LogLevel::wrn, "wrn message example" );
-        LOG(LogLevel::err, "err message example" );
+        AppLog::Add(LogLevel::err, "err message example" );
+
         show_app_log = true;
+    }
+
+    if( ImGui::Button( "Add Console message" ) )
+    {
+        CONSOLE( "Simple %d message example", 123 );
+        CONSOLE(LogLevel::wrn, "wrn message example" );
+        AppConsole::Add(LogLevel::err, "err message example" );
+
+        show_app_console = true;
     }
 
     ImGui::End();

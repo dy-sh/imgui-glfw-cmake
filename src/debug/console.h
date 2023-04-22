@@ -13,7 +13,7 @@ struct AppConsoleColors
     ImVec4 WarningColor = ImVec4( 1.0f, 0.8f, 0.6f, 1.0f );
 };
 
-struct AppConsole
+struct AppConsoleWindow
 {
     AppConsoleColors ConsoleColors;
 
@@ -26,16 +26,14 @@ struct AppConsole
     bool AutoScroll     = true;
     bool ScrollToBottom = false;
 
-    AppConsole();
-    ~AppConsole();
+    AppConsoleWindow();
+    ~AppConsoleWindow();
     void ClearLog();
-    void AddLog( const char* fmt, ... ) IM_FMTARGS( 2 );
+    void Add( const char* fmt, ... ) IM_FMTARGS( 2 );
     void Draw( const char* title, bool* p_open );
     void ExecCommand( const char* command_line );
     int TextEditCallback( ImGuiInputTextCallbackData* data );
     void Help();
 };
-
-void ShowAppConsole( bool* p_open );
 
 #endif // IMGUI_GLFW_CONSOLE_H
