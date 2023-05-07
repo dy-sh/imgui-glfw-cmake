@@ -2,40 +2,47 @@
 // Created by Dmitry Savosh on 19.04.2023.
 //
 
-#include "console.h"
-#include "../utils.h"
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include "Console.h"
+#include "../Utils/Utils.h"
 #include <string>
 #include <vector>
+#include <iomanip>
+#include <sstream>
 
 static int TextEditCallbackStub( ImGuiInputTextCallbackData* data )
 {
-    auto* console = (AppConsoleWindow*)data->UserData;
+    auto* console = (ConsoleWindow*)data->UserData;
     return console->TextEditCallback( data );
 }
 
-AppConsoleWindow::AppConsoleWindow()
+
+ConsoleWindow::ConsoleWindow(const std::string& title, bool visible)
+: Window(title, visible, {700, 400})
 {
-    ClearLog();
+    Clear();
     Commands.push_back( "HELP" );
     Commands.push_back( "HISTORY" );
     Commands.push_back( "CLEAR" );
 }
 
-AppConsoleWindow::~AppConsoleWindow()
+
+ConsoleWindow::~ConsoleWindow()
 {
-    ClearLog();
+    Clear();
     for( int i = 0; i < History.Size; i++ )
         free( History[i] );
 }
 
-void AppConsoleWindow::ClearLog()
+void ConsoleWindow::Clear()
 {
     for( int i = 0; i < Items.Size; i++ )
         free( Items[i] );
     Items.clear();
 }
 
-void AppConsoleWindow::Add( const char* fmt, ... )
+void ConsoleWindow::Add( const char* fmt, ... )
 {
     // FIXME-OPT
     char buf[1024];
@@ -47,22 +54,42 @@ void AppConsoleWindow::Add( const char* fmt, ... )
     Items.push_back( Strdup( buf ) );
 }
 
-void AppConsoleWindow::Draw( const char* title, bool* p_open )
-{
-    ImGui::SetNextWindowSize( ImVec2( 700, 400 ), ImGuiCond_FirstUseEver );
-    if( !ImGui::Begin( title, p_open ) )
-    {
-        ImGui::End();
-        return;
-    }
 
+
+void ConsoleWindow::Add(LogLevel level, const char* fmt, ...)
+{
+    std::ostringstream oss;
+
+    // append LogLevel
+    oss << "[" << ToString(level) << "] ";
+    // append message
+    oss << fmt << "\n";
+
+    std::string s = oss.str();
+    fmt = s.c_str();
+
+    va_list args;
+    va_start(args, fmt);
+
+    int length = vsnprintf(nullptr, 0, fmt, args); // Determine the length of the formatted string
+    std::string buffer(length, '\0'); // Allocate a buffer to store the formatted string
+    vsnprintf(&buffer[0], length + 1, fmt, args); // Format the string into the buffer
+    Add("%s", buffer.c_str()); // Add the formatted string to the log
+
+    va_end(args);
+}
+
+void ConsoleWindow::RenderContent( )
+{
     // As a specific feature guaranteed by the library, after calling Begin() the last Item represent the title bar.
     // So e.g. IsItemHovered() will return true when hovering the title bar.
     // Here we create a context menu only available from the title bar.
     if( ImGui::BeginPopupContextItem() )
     {
         if( ImGui::MenuItem( "Close" ) )
-            *p_open = false;
+        {
+            visible = false;
+        }
         ImGui::EndPopup();
     }
 
@@ -70,7 +97,7 @@ void AppConsoleWindow::Draw( const char* title, bool* p_open )
 
     if( ImGui::SmallButton( "Clear" ) )
     {
-        ClearLog();
+        Clear();
     }
     ImGui::SameLine();
     bool copy_to_clipboard = ImGui::SmallButton( "Copy" );
@@ -112,7 +139,7 @@ void AppConsoleWindow::Draw( const char* title, bool* p_open )
         if( ImGui::BeginPopupContextWindow() )
         {
             if( ImGui::Selectable( "Clear" ) )
-                ClearLog();
+                Clear();
             ImGui::EndPopup();
         }
 
@@ -208,11 +235,9 @@ void AppConsoleWindow::Draw( const char* title, bool* p_open )
     ImGui::SetItemDefaultFocus();
     if( reclaim_focus )
         ImGui::SetKeyboardFocusHere( -1 ); // Auto focus previous widget
-
-    ImGui::End();
 }
 
-void AppConsoleWindow::ExecCommand( const char* command_line )
+void ConsoleWindow::ExecCommand( const char* command_line )
 {
     Add( "# %s\n", command_line );
 
@@ -231,7 +256,7 @@ void AppConsoleWindow::ExecCommand( const char* command_line )
     // Process command
     if( Stricmp( command_line, "CLEAR" ) == 0 )
     {
-        ClearLog();
+        Clear();
     }
     else if( Stricmp( command_line, "HELP" ) == 0 )
     {
@@ -251,7 +276,7 @@ void AppConsoleWindow::ExecCommand( const char* command_line )
     // On command input, we scroll to bottom even if AutoScroll==false
     ScrollToBottom = true;
 }
-void AppConsoleWindow::Help()
+void ConsoleWindow::Help()
 {
     Add( "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A "
          "more elaborate "
@@ -268,7 +293,7 @@ void AppConsoleWindow::Help()
     Filter.Clear();
 }
 
-int AppConsoleWindow::TextEditCallback( ImGuiInputTextCallbackData* data )
+int ConsoleWindow::TextEditCallback( ImGuiInputTextCallbackData* data )
 {
     // AddMessage("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
     switch( data->EventFlag )

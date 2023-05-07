@@ -2,7 +2,7 @@ cmake_minimum_required( VERSION 3.10 )
 
 project( imgui-app )
 
-set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD 17 )
 
 set( THIRDPARTY_DIR ${CMAKE_CURRENT_LIST_DIR}/thirdparty )
 
@@ -65,7 +65,7 @@ set( MAIN_APP_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/opengl3.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/glfw.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/fonts.cpp src/window/main_window.cpp src/window/main_window.h src/window/login_window.cpp src/window/login_window.h src/style.h src/app.h src/debug/console.cpp src/debug/console.h src/debug/log.cpp src/debug/log.h src/utils.h src/debug.h)
+    ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/fonts.cpp src/Window/LoginWindow.cpp src/Window/MainWindow.cpp src/Window/Window.cpp src/Window/WindowManager.cpp src/Tools/Console.cpp src/Tools/Log.cpp)
 
 set( MAIN_APP_NAME imguiapp )
 

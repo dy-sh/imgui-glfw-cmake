@@ -2,10 +2,10 @@
 // Created by Dmitry Savosh on 19.04.2023.
 //
 
-#ifndef IMGUI_GLFW_CONSOLE_H
-#define IMGUI_GLFW_CONSOLE_H
+#pragma once
 
-#include "imgui/imgui.h"
+#include "Debug.h"
+#include "../Window/Window.h"
 
 struct AppConsoleColors
 {
@@ -13,12 +13,13 @@ struct AppConsoleColors
     ImVec4 WarningColor = ImVec4( 1.0f, 0.8f, 0.6f, 1.0f );
 };
 
-struct AppConsoleWindow
+class ConsoleWindow:public Window
 {
+public:
     AppConsoleColors ConsoleColors;
 
     char InputBuf[256]{};
-    ImVector<char*> Items;
+    inline static ImVector<char*> Items;
     ImVector<const char*> Commands;
     ImVector<char*> History;
     int HistoryPos = -1; // -1: new line, 0..History.Size-1 browsing history.
@@ -26,14 +27,18 @@ struct AppConsoleWindow
     bool AutoScroll     = true;
     bool ScrollToBottom = false;
 
-    AppConsoleWindow();
-    ~AppConsoleWindow();
-    void ClearLog();
-    void Add( const char* fmt, ... ) IM_FMTARGS( 2 );
-    void Draw( const char* title, bool* p_open );
+
+    ConsoleWindow(const std::string& title, bool visible);
+
+    ~ConsoleWindow();
+    
+    static void Clear();
+    static void Add( const char* fmt, ... ) IM_FMTARGS( 2 );
+    static void Add(LogLevel level, const char* fmt, ...) IM_FMTARGS(3);
+    void RenderContent() override;
     void ExecCommand( const char* command_line );
     int TextEditCallback( ImGuiInputTextCallbackData* data );
     void Help();
 };
 
-#endif // IMGUI_GLFW_CONSOLE_H
+

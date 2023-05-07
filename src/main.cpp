@@ -20,8 +20,7 @@
 #include <stdio.h>
 #include <cmath>
 
-#include "app.h"
-#include "style.h"
+#include "AppGUI.h"
 
 GLFWwindow* g_window;
 static ImVec4 bg_color;
@@ -31,6 +30,8 @@ EM_JS( int, canvas_get_width, (), { return Module.canvas.width; } );
 EM_JS( int, canvas_get_height, (), { return Module.canvas.height; } );
 EM_JS( void, resizeCanvas, (), { js_resizeCanvas(); } );
 #endif
+
+AppGUI app;
 
 static void glfw_error_callback( int error, const char* description )
 {
@@ -62,7 +63,7 @@ void loop()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ShowWindows();
+    app.Render();
 
     ImGui::Render();
 
@@ -122,7 +123,7 @@ int init()
     ImGui_ImplGlfw_InitForOpenGL( g_window, false );
     ImGui_ImplOpenGL3_Init();
 
-    apply_custom_style( bg_color );
+    app.ApplyStyle( bg_color );
 
     // Cursor callbacks
     glfwSetMouseButtonCallback( g_window, ImGui_ImplGlfw_MouseButtonCallback );
@@ -162,7 +163,7 @@ extern "C" int main( int argc, char** argv )
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop( loop, 0, 1 );
 #else
-    while( !glfwWindowShouldClose( g_window ) )
+    while( !app.should_close && !glfwWindowShouldClose( g_window ) )
     {
         loop();
     }
