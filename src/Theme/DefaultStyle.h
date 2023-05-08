@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "imgui/imgui.h"
+#include "imgui.h"
 #include "Style.h"
 
 struct DefaultStyle : Style

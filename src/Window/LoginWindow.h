@@ -1,10 +1,8 @@
-//
-// Created by Dmitry Savosh on 18.04.2023.
-//
+// Copyright 2023 Dmitry Savosh <d.savosh@gmail.com>
 
 #pragma once
 
-#include "imgui/imgui.h"
+#include "imgui.h"
 #include "Window.h"
 
 

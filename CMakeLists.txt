@@ -49,7 +49,7 @@ set( IMGUI_SOURCES
         )
 
 add_library( imgui STATIC ${IMGUI_SOURCES} )
-target_include_directories( imgui PRIVATE ${THIRDPARTY_DIR} ${IMGUI_SRC_DIR} )
+target_include_directories( imgui PUBLIC ${THIRDPARTY_DIR} ${IMGUI_SRC_DIR} )
 
 
 #-------------------- fmtlib ---------------------
@@ -65,7 +65,7 @@ set( MAIN_APP_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/opengl3.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/glfw.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/fonts.cpp src/Window/LoginWindow.cpp src/Window/MainWindow.cpp src/Window/Window.cpp src/Window/WindowManager.cpp src/Tools/Console.cpp src/Tools/Log.cpp)
+    ${CMAKE_CURRENT_LIST_DIR}/src/imgui_impl/fonts.cpp src/Window/LoginWindow.cpp src/Window/MainWindow.cpp src/Window/Window.cpp src/Window/WindowManager.cpp src/Tools/Console.cpp src/Tools/Log.cpp src/Tools/Console/ConsoleCommandsExecutor.cpp src/Tools/Console/Commands/ClearConsoleCommand.cpp src/Tools/Console/Commands/HelpConsoleCommand.cpp src/Tools/Console/Commands/HistoryConsoleCommand.cpp src/Tools/Console/ConsoleCommand.cpp)
 
 set( MAIN_APP_NAME imguiapp )
 

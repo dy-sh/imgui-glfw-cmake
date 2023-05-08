@@ -5,17 +5,16 @@
 #pragma once
 #include "Window.h"
 
-
 class WindowManager;
 
 class MainWindow : public Window // or MaximizedWindow
 {
 public:
-    MainWindow(const std::string& title, WindowManager* windowManager, bool visible = true)
-        : Window(title, visible), windowManager(windowManager)
+    MainWindow( const std::string& title, WindowManager* windowManager, bool visible = true )
+            : Window( title, visible ), windowManager( windowManager )
     {
+        options.no_bring_to_front = true;
     }
-
 
     void RenderContent() override;
 
