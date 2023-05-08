@@ -3,6 +3,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <imgui/imgui.h>
 #include <memory>
 
 #include "Window.h"
@@ -18,6 +19,8 @@ public:
     void RemoveWindow(Window* window);
     
     Window* GetWindowByTitle(const std::string& title);
+    
+    void OnExit();
 
 private:
     std::vector<std::unique_ptr<Window>> windows;

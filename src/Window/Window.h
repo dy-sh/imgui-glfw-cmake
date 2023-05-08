@@ -33,8 +33,7 @@ public:
         if (visible)
         {
             ImGui::SetNextWindowSizeConstraints(size, ImVec2(FLT_MAX, FLT_MAX));
-            //             ImGui::SetNextWindowSize( size, ImGuiCond_FirstUseEver );
-
+            // ImGui::SetNextWindowSize( size, ImGuiCond_FirstUseEver );
 
             ImGuiWindowFlags flags = 0;
             if (!options.resizable)
@@ -66,6 +65,11 @@ public:
 
     void SetOptions(WindowOptions options) { this->options = options; }
     WindowOptions GetOptions() { return options; }
+
+
+    virtual void OnExit()
+    {
+    }
 
 protected:
     std::string title;
