@@ -34,8 +34,8 @@ public:
     ~ConsoleWindow();
     
     static void Clear();
-    static void Add( const char* fmt, ... ) IM_FMTARGS( 2 );
-    static void Add(LogLevel level, const char* fmt, ...) IM_FMTARGS(3);
+    static void Add( const char* fmt, ... );
+    static void Add(LogLevel level, const char* fmt, ...);
     void RenderContent() override;
     void ExecCommand( const char* command_line );
     int TextEditCallback( ImGuiInputTextCallbackData* data );
